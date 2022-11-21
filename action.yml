@@ -1,0 +1,12 @@
+name: 'Slack Markdown Converter'
+description: 'Convert markdown to Slack mrkdwn'
+inputs:
+  text:
+    description: 'Markdown text to convert'
+    required: true
+outputs:
+  text:
+    description: 'Converted Slack mrkdwn text'
+runs:
+  using: 'node16'
+  main: 'dist/index.js'
