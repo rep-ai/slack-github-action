@@ -1,6 +1,6 @@
 on: [push]
 env:
-  name: Staging
+  name: Test
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -25,75 +25,25 @@ jobs:
             * [List Item 1](http://example.com)
             * List Item 2
 
-      - name: Get the output
-        run: |
-          echo "start_status_quote: ${{ steps.rose.outputs.start_status_quote }}"
-          echo "final_status_quote: ${{ steps.rose.outputs.final_status_quote }}"
-          echo "notes: ${{ steps.notes.outputs.text }}"
-
-      # - id: slack
-      #   uses: slackapi/slack-github-action@v1.23.0
-      #   with:
-      #     # The following message update step does not accept a channel name.
-      #     # Setting a channel ID here for consistency is highly recommended.
-      #     channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
-      #     # "text": "Deployment started (In Progress)",
-      #     payload: |
-      #       {
-      #         "text": "*Deployment started.*",
-      #         "attachments": [
-      #           {
-      #             "author_name": "${{ github.actor }}",
-      #             "author_link": "${{ github.server_url }}/${{ github.actor }}",
-      #             "author_icon": "${{ github.server_url }}/${{ github.actor }}.png?size=32",
-      #             "color": "dbab09",
-      #             "text": ${{ toJSON(steps.notes.outputs.text) }},
-      #             "footer": "<https://github.com/${{ github.repository }}/commit/${{ github.sha }}/checks|View Workflow Run>",
-      #             "fields": [
-      #               {
-      #                 "title": "",
-      #                 "value": "",
-      #                 "short": true
-      #               }
-      #             ]
-      #           },
-      #           {
-      #             "author_name": "Rose",
-      #             "author_icon": "https://avatars.slack-edge.com/2022-04-01/3354706307424_3c366bf2570e82087e09_512.jpg",
-      #             "text": "*\"My advice is...don't use dating apps, they have too many background checks!\"*"
-      #           }
-      #         ]
-      #       }
-      #   env:
-      #     SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-
       - id: slack
         uses: slackapi/slack-github-action@v1.23.0
         with:
           # The following message update step does not accept a channel name.
           # Setting a channel ID here for consistency is highly recommended.
           channel-id: ${{ secrets.SLACK_CHANNEL_ID }}
-          # "text": "Deployment started (In Progress)",
           payload: |
             {
-              "text": "*${{ env.name }} deployment started.*",
+              "text": "*${{ steps.rose.outputs.start_status_quote }}*",
               "attachments": [
                 {
                   "author_name": "${{ github.actor }}",
                   "author_link": "${{ github.server_url }}/${{ github.actor }}",
                   "author_icon": "${{ github.server_url }}/${{ github.actor }}.png?size=32",
                   "color": "${{ fromJSON('{ success: "good", failure: "danger", cancelled: "gray" }')[job.status] }}",
+                  "title": "*${{ env.name }} deployment started.*",
                   "text": ${{ toJSON(steps.notes.outputs.text) }},
                   "thumb_url": "https://avatars.slack-edge.com/2022-04-01/3354706307424_3c366bf2570e82087e09_512.jpg",
-                  "footer": "*${{ steps.rose.outputs.start_status_quote }}*",
-                  "footer_icon": "https://avatars.slack-edge.com/2022-04-01/3354706307424_3c366bf2570e82087e09_512.jpg",
-                  "fields": [
-                    {
-                      "title": "",
-                      "value": "<https://github.com/${{ github.repository }}/commit/${{ github.sha }}/checks|View workflow run>",
-                      "short": true
-                    }
-                  ]
+                  "footer": "https://github.com/${{ github.repository }}/commit/${{ github.sha }}/checks"
                 }
               ]
             }
